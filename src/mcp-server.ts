@@ -91,6 +91,67 @@ server.tool(
   }
 );
 
+// 4.5. Define a Password Generator Tool
+server.tool(
+  "generate_password",
+  "Generate a secure random password with customizable complexity options",
+  {
+    length: z.number().describe("The length of the password (minimum 4, maximum 64)"),
+    includeNumbers: z.boolean().describe("Whether to include numbers (0-9)"),
+    includeSymbols: z.boolean().describe("Whether to include special symbols (!@#$%^&*)"),
+    includeUppercase: z.boolean().describe("Whether to include uppercase letters (A-Z)"),
+  },
+  async ({ length, includeNumbers, includeSymbols, includeUppercase }) => {
+    if (length < 4 || length > 64) {
+      return {
+        content: [{ type: "text", text: "Error: Password length must be between 4 and 64 characters." }],
+        isError: true,
+      };
+    }
+    const lowercase = "abcdefghijklmnopqrstuvwxyz";
+    const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const numbers = "0123456789";
+    const symbols = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+    let chars = lowercase;
+    let guaranteed = "";
+
+    if (includeUppercase) {
+      chars += uppercase;
+      guaranteed += uppercase[Math.floor(Math.random() * uppercase.length)];
+    }
+    if (includeNumbers) {
+      chars += numbers;
+      guaranteed += numbers[Math.floor(Math.random() * numbers.length)];
+    }
+    if (includeSymbols) {
+      chars += symbols;
+      guaranteed += symbols[Math.floor(Math.random() * symbols.length)];
+    }
+
+    // Always guarantee at least one lowercase
+    guaranteed += lowercase[Math.floor(Math.random() * lowercase.length)];
+
+    let password = guaranteed;
+    for (let i = password.length; i < length; i++) {
+      password += chars[Math.floor(Math.random() * chars.length)];
+    }
+
+    // Shuffle the characters to avoid predictable starts
+    const passwordArray = password.split("");
+    for (let i = passwordArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [passwordArray[i], passwordArray[j]] = [passwordArray[j], passwordArray[i]];
+    }
+    password = passwordArray.join("");
+
+    return {
+      content: [{ type: "text", text: password }],
+    };
+  }
+);
+
+
 // 5. Define a Resource (System Usage)
 server.resource(
   "system-usage",
