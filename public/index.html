@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCP Live Inspector & Dashboard</title>
+  <!-- Google Fonts for Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+  <!-- Top Navigation Bar -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo-icon"></div>
+      <h1>MCP <span class="accent-text">Live Inspector</span></h1>
+      <span class="badge badge-client">Host Client: Active</span>
+    </div>
+    
+    <div class="header-right">
+      <div class="status-indicator">
+        <span class="status-dot pulsing" id="connection-status-dot"></span>
+        <span id="connection-status-text">Connecting...</span>
+      </div>
+      <div class="server-badge-group" id="server-badge-group">
+        <span class="badge badge-server" id="server-name-badge">Server: demo-mcp-server</span>
+        <span class="badge badge-version" id="server-version-badge">v1.0.0</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dashboard Grid Layout -->
+  <main class="dashboard-grid">
+    <!-- Left Panel: Navigation & Features List -->
+    <aside class="sidebar-panel">
+      <!-- Section: Navigation Tabs -->
+      <div class="tab-selectors">
+        <button class="tab-btn active" id="tab-btn-tools" onclick="switchCategory('tools')">
+          <span class="btn-icon">⚡</span> Tools
+        </button>
+        <button class="tab-btn" id="tab-btn-resources" onclick="switchCategory('resources')">
+          <span class="btn-icon">📁</span> Resources
+        </button>
+        <button class="tab-btn" id="tab-btn-prompts" onclick="switchCategory('prompts')">
+          <span class="btn-icon">💬</span> Prompts
+        </button>
+      </div>
+
+      <!-- Feature Lists (Swapped dynamically by app.js) -->
+      <div class="category-lists">
+        <!-- Tools List -->
+        <div class="list-container active" id="list-tools">
+          <h3>Available Tools</h3>
+          <p class="section-desc">Executable functions exposed by the MCP Server.</p>
+          <div class="scroll-list" id="tools-list-items">
+            <!-- Dynamic tools injected here -->
+            <div class="loading-spinner-small"></div>
+          </div>
+        </div>
+
+        <!-- Resources List -->
+        <div class="list-container" id="list-resources">
+          <h3>Exposed Resources</h3>
+          <p class="section-desc">Read-only data endpoints accessible by URI.</p>
+          <div class="scroll-list" id="resources-list-items">
+            <!-- Dynamic resources injected here -->
+          </div>
+        </div>
+
+        <!-- Prompts List -->
+        <div class="list-container" id="list-prompts">
+          <h3>Prompt Templates</h3>
+          <p class="section-desc">Templated message guidelines for formatting context.</p>
+          <div class="scroll-list" id="prompts-list-items">
+            <!-- Dynamic prompts injected here -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- System Specs Box -->
+      <div class="system-meta-box">
+        <h4>Connection Details</h4>
+        <div class="meta-row">
+          <span class="meta-label">Protocol:</span>
+          <span class="meta-val" id="meta-protocol-ver">2024-11-05</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Transport:</span>
+          <span class="meta-val highlight-green">stdio (subprocess)</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Host Bridge:</span>
+          <span class="meta-val">http://localhost:3005</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right Workspace Area -->
+    <div class="workspace-panel">
+      <!-- Upper Section: Interactive Form and Action Result -->
+      <section class="workspace-card interaction-area">
+        <div class="card-header">
+          <div class="header-details">
+            <span class="category-indicator" id="selected-type-badge">TOOLS</span>
+            <h2 id="selected-item-title">Select an item</h2>
+          </div>
+          <span class="badge" id="selected-item-desc-badge">No item selected</span>
+        </div>
+        
+        <div class="card-body">
+          <p id="selected-item-description" class="item-description">
+            Choose a Tool, Resource, or Prompt from the sidebar to inspect its definition, supply arguments, and run it in real-time.
+          </p>
+
+          <!-- Dynamic Form Section -->
+          <div id="dynamic-form-container" class="form-container hidden">
+            <form id="interaction-form" onsubmit="handleFormSubmit(event)">
+              <div id="form-fields-grid" class="form-fields-grid">
+                <!-- Inputs generated dynamically here -->
+              </div>
+              <button type="submit" class="btn btn-primary" id="submit-action-btn">
+                Execute Action
+              </button>
+            </form>
+          </div>
+
+          <!-- Execution Response Box -->
+          <div class="result-box-container">
+            <div class="result-header">
+              <span>Result Output</span>
+              <span id="response-status-badge" class="response-status">Idle</span>
+            </div>
+            <div class="result-content">
+              <pre><code id="result-output-code" class="language-json">{ "message": "Select an action and run it to view output here" }</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Lower Section: Protocol JSON-RPC Logs Inspector -->
+      <section class="workspace-card logs-area">
+        <div class="card-header">
+          <div class="header-left">
+            <h2>Protocol Inspector <span class="pulse-text" id="inspector-streaming-indicator">● LIVE</span></h2>
+            <p class="section-desc">Raw JSON-RPC messages transmitted via the StdioClientTransport</p>
+          </div>
+          <div class="header-actions">
+            <div class="filter-group">
+              <button class="filter-btn active" onclick="setLogFilter('all')">All</button>
+              <button class="filter-btn" onclick="setLogFilter('sent')">Sent</button>
+              <button class="filter-btn" onclick="setLogFilter('received')">Received</button>
+            </div>
+            <button class="btn btn-secondary btn-small" id="pause-logs-btn" onclick="togglePauseLogs()">
+              ⏸ Pause
+            </button>
+            <button class="btn btn-secondary btn-small" onclick="clearLogs()">
+              🗑 Clear
+            </button>
+          </div>
+        </div>
+
+        <!-- Terminal log viewport -->
+        <div class="logs-viewport" id="logs-viewport">
+          <!-- Log items injected dynamically -->
+          <div class="empty-logs-placeholder" id="empty-logs-placeholder">
+            No JSON-RPC traffic captured yet.
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Popup Modal for Log Detail Inspection -->
+  <div class="modal-overlay hidden" id="log-detail-modal" onclick="closeLogModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3>JSON-RPC Message Detail</h3>
+        <button class="close-btn" onclick="closeLogModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <pre><code id="modal-json-content"></code></pre>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
