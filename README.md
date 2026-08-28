@@ -4,7 +4,7 @@ Welcome! This repository is an interactive, visual Proof of Concept (POC) for th
 
 ---
 
-## 💡 What is Model Context Protocol (MCP)?
+## What is Model Context Protocol (MCP)?
 
 The **Model Context Protocol (MCP)** is an open-source standard created by Anthropic that defines how Large Language Models (LLMs) connect to external data sources and tools. 
 
@@ -17,7 +17,7 @@ Instead of writing custom APIs, routers, and configurations for every new tool o
 
 ---
 
-## 🛠️ Technology Stack Used
+## Technology Stack Used
 
 This playground uses modern, lightweight technologies:
 - **TypeScript & Node.js**: The core language stack. Native ECMAScript Modules (ESM) compile typescript sources down to ESM-compliant JavaScript.
@@ -28,7 +28,7 @@ This playground uses modern, lightweight technologies:
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```
 ├── package.json         # Project metadata, ESM module configuration & scripts
@@ -44,7 +44,7 @@ This playground uses modern, lightweight technologies:
 
 ---
 
-## ⚡ How the Playground Works Under the Hood
+## How the Playground Works Under the Hood
 
 ```
    ┌────────────────────────────────────────────────────────┐
@@ -77,7 +77,7 @@ This playground uses modern, lightweight technologies:
 
 ---
 
-## 🚀 Running the Project
+## Running the Project
 
 ### Prerequisites
 Make sure you have Node.js (version 16 or newer) installed.
@@ -99,7 +99,7 @@ Make sure you have Node.js (version 16 or newer) installed.
 
 ---
 
-## 🔧 How to Expand the Project
+## How to Expand the Project
 
 One of the best ways to learn MCP is by adding your own capabilities. Here is how you can expand each category:
 
@@ -182,5 +182,5 @@ server.prompt(
 
 ---
 
-## ⚡ Next Steps
-Once you feel comfortable playing with this dashboard, you can connect this MCP Server (`dist/mcp-server.js`) to real host applications like **Claude Desktop** or **Cursor** to let an LLM control your tools directly!
+## Next Steps
+Once you feel comfortable playing with this dashboard, you can connect this MCP Server (`dist/mcp-server.js`) to real host applications like **Claude Desktop** or **Cursor** to let an LLM control your tools directly.
